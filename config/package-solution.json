@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "hellosharecloud-client-side-solution",
+    "id": "50f46b43-b4a8-4ab6-9869-642574aa3fd5",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.16.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "hellosharecloud description"
+      },
+      "longDescription": {
+        "default": "hellosharecloud description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "hellosharecloud Feature",
+        "description": "The feature that activates elements of the hellosharecloud solution.",
+        "id": "524c8c84-0aa3-48c5-bb0f-b8b3c7912761",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/hellosharecloud.sppkg"
+  }
+}
