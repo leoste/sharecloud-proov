@@ -55,44 +55,44 @@ const HelloWorld = ({
   const getLastDateOfMonth = (month: number): Date => {
     return new Date(year, month + 1, 0);
   }
-  
-  const getCurrentWeekThursday = (date: Date): Date => {
-    const day = date.getDay();
-    const correctedDay = day === 0 ? 6 : day - 1;
-    const lastThursday = new Date(date.getTime() + msInOneDay * (3 - correctedDay));
-    return lastThursday;
+
+  /**
+   * 
+   * @param day day number 0-6, where 0 equals Sunday and 6 equals Saturday
+   * @returns number 0-6, where 0 equals Monday and 6 equals Sunday
+   */
+  const correctDay = (day: number): number => {
+    return day === 0 ? 6 : day - 1;
   }
 
-  const isCurrentWeekThursdaySameMonth = (date: Date): boolean => {
-    return date.getMonth() === getCurrentWeekThursday(date).getMonth();
+  const getDateByDayOfSameWeek = (date: Date, day: number): Date => {
+    // default weekday in Date object starts from sunday. for accurate calculations, correct data
+
+    const correctedDateDay = correctDay(date.getDay());
+    const correctedDay = correctDay(day);
+    const newDate = new Date(date.getTime() + msInOneDay * (correctedDay - correctedDateDay));
+    return newDate;
   }
 
-  const getMonthWeekCount = (month: number): number => {
-    const firstDateOfMonth = getFirstDateOfMonth(month);
-    const lastDateOfMonth = getLastDateOfMonth(month);
-    const weekOfFirstDateOfMonth = getDateWeek(firstDateOfMonth);
-    const weekOfLastDateOfMonth = getDateWeek(lastDateOfMonth);
-
-    let weekCount = weekOfLastDateOfMonth - weekOfFirstDateOfMonth;
-
-    if (isCurrentWeekThursdaySameMonth(firstDateOfMonth)) weekCount++;
-    if (!isCurrentWeekThursdaySameMonth(lastDateOfMonth)) weekCount--;
-
-    return weekCount;
+  const isDateWeekThursdaySameMonth = (date: Date): boolean => {
+    const thursday = getDateByDayOfSameWeek(date, 4);
+    return date.getMonth() === thursday.getMonth();
   }
 
   const getDayCountOfDate = (date: Date): number => {
     return Math.floor((date.getTime() - januaryFirst.getTime()) / msInOneDay);
   }
 
-  // TODO: implement iso standard for week (first week of year starts from thursday)
-
   const getDateWeek = (date: Date): number => {
     // ISO standard says that the week belongs to the month that has most days.
     // The month that has the thursday of the week has most of the days of that week.
 
-    const dayCount = getDayCountOfDate(date);
-    const week = (Math.ceil(dayCount / 7)) + (isCurrentWeekThursdaySameMonth(januaryFirst) ? 1 : 0);
+    const yearDayCount = getDayCountOfDate(date);
+    const weekDayCount = correctDay(januaryFirst.getDay());
+    const dayCount = yearDayCount + weekDayCount;
+    const week = (Math.ceil(dayCount / 7)) - (isDateWeekThursdaySameMonth(januaryFirst) ? 0 : 1);
+
+    console.log(date, yearDayCount, dayCount, '|', Math.ceil(dayCount / 7));
 
     return week;
   }
@@ -103,14 +103,72 @@ const HelloWorld = ({
     return { startWeek, endWeek }
   }
 
+  // TODO: fix bug, sometimes there are too few weeks, sometimes too many
+
+  const getMonthWeekRange = (month: number): IWeekRange => {
+    const firstDateOfMonth = getFirstDateOfMonth(month);
+    const lastDateOfMonth = getLastDateOfMonth(month);
+
+    let weekRange = getWeekRange(firstDateOfMonth, lastDateOfMonth);
+
+    //console.log('1) -------------------------------', month, weekRange.startWeek, weekRange.endWeek);
+
+    if (!isDateWeekThursdaySameMonth(firstDateOfMonth)) weekRange.startWeek++;
+    if (!isDateWeekThursdaySameMonth(lastDateOfMonth)) weekRange.endWeek--;
+
+    //console.log('2) -------------------------------', month, weekRange.startWeek, weekRange.endWeek);
+
+    return weekRange;
+  }
+
+  const getMonthWeekCount = (month: number): number => {
+    const monthWeekRange = getMonthWeekRange(month);
+
+    return monthWeekRange.endWeek - monthWeekRange.startWeek + 1;
+  }
+
+  const isWeekInRange = (week: number, weekRange: IWeekRange): boolean => {
+    return week >+ weekRange.startWeek  && week <= weekRange.endWeek
+  }
+
+  const areWeekRangesOverlapping = (oneWeekRange: IWeekRange, otherWeekRange: IWeekRange): boolean => {
+    return isWeekInRange(oneWeekRange.startWeek, otherWeekRange) || isWeekInRange(oneWeekRange.endWeek, otherWeekRange);
+  }
+
   const getQuarterWeeks = (): number[] => {
-    const weeks = [];
+    const weeks: number[] = [];
     const months = getQuarterMonths();
-    const { startWeek, endWeek } = getWeekRange(getFirstDateOfMonth(months[0]), getLastDateOfMonth(months[2]));
-    for (let i = startWeek; i < endWeek; i++) {
-      weeks.push(i);
-    }
+    months.forEach(month => {
+      const weekRange = getMonthWeekRange(month);
+      for (let i = weekRange.startWeek; i <= weekRange.endWeek; i++) {
+        weeks.push(i);
+      }
+    })
     return weeks;
+  }
+
+  // TODO: universal function for adding/removing quarter
+
+  const onClickLastQuarter = () => {
+    let nextQuarter = quarter - 1;
+    let nextYear = year;
+    if (nextQuarter < 1) {
+      nextQuarter = 4;
+      nextYear--;
+    }
+    setQuarter(nextQuarter);
+    setYear(nextYear);
+  }
+
+  const onClickNextQuarter = () => {
+    let nextQuarter = quarter + 1;
+    let nextYear = year;
+    if (nextQuarter > 4) {
+      nextQuarter = 1;
+      nextYear++;
+    }
+    setQuarter(nextQuarter);
+    setYear(nextYear);
   }
 
   const tasks: ITask[] = [
@@ -131,20 +189,21 @@ const HelloWorld = ({
     }
   ];
 
-  /*const getRelativeDateByMonths = (date: Date, months: number): Date => {
-    const relativeDate = new Date(date.getTime());
-    relativeDate.setMonth(relativeDate.getMonth() + months);
-    return relativeDate;
-  }*/
-
   const quarterWeeks = getQuarterWeeks();
 
+  const renderTd = (colSpan: number, blue: boolean = false) => {
+    if (colSpan > 0) return (<td colSpan={colSpan}>{blue ? 'blue' : ''}</td>)
+    else return (<></>);
+  }
+
+  // TODO: instead of task => true, check if task is within current quarter, otherwise dont include
   return (
     <>
+      <h1>{year} Q{quarter}</h1>
       <table className={styles.quarterTable}>
         <tr>
           {getQuarterMonths().map(month => {
-            return (<th colSpan={getMonthWeekCount(month)}>{month}</th>);
+            return (<th colSpan={getMonthWeekCount(month)}>{new Date(year, month).toLocaleString('default', { month: 'long'})}</th>);
           })}
         </tr>
         <tr>
@@ -152,17 +211,26 @@ const HelloWorld = ({
             return (<th>{week}</th>)
           })}
         </tr>
-        {tasks.map(task => {
+        {tasks.filter(task => {
+          return areWeekRangesOverlapping(
+            getWeekRange(task.startDate, task.endDate),
+            { startWeek: quarterWeeks[0], endWeek: quarterWeeks[quarterWeeks.length - 1]}
+          );
+        }).map(task => {
           const { startWeek, endWeek } = getWeekRange(task.startDate, task.endDate);
 
           return (
-            <tr>
-              <td colSpan={startWeek - quarterWeeks[0]}></td>
-              <td colSpan={endWeek - startWeek + 1}>blue</td>
+            <tr>              
+              {renderTd(startWeek - quarterWeeks[0])}
+              {renderTd(endWeek - startWeek + 1, true)}
+              {renderTd(quarterWeeks[quarterWeeks[quarterWeeks.length - 1] - endWeek])}
             </tr>
           );
         })}
       </table>
+
+      <button onClick={onClickLastQuarter}>Eelmine kvartal</button>
+      <button onClick={onClickNextQuarter}>Järgmine kvartal</button>
 
       <section className={`${styles.helloWorld} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={styles.welcome}>
