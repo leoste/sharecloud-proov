@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import styles from './HelloWorld.module.scss';
-import { addWeeks, DefaultButton, getWeekNumber, getWeekNumbersInMonth, Stack } from 'office-ui-fabric-react';
+import { addWeeks, DefaultButton, getWeekNumber, getWeekNumbersInMonth, Stack, TooltipHost } from 'office-ui-fabric-react';
 import * as strings from 'HelloWorldWebPartStrings';
 import { FirstDayOfWeek, FirstWeekOfYear } from '../helpers/constants';
 import ITask from '../types/ITask';
@@ -23,6 +23,8 @@ const TasksTable = ({
 
   const [year, setYear] = useState<number>(now.getFullYear());
   const [quarter, setQuarter] = useState<number>(Math.floor((now.getMonth() + 3) / 3));
+
+  const [tooltipContent, setTooltipContent] = useState<string>('');
 
   const getQuarterMonths = (): number[] => {
     const months = [];
@@ -64,7 +66,7 @@ const TasksTable = ({
   }
 
   const areWeeksOverlapping = (weekNumbers: number[], otherWeekNumbers: number[]): boolean => {
-    
+
     return weekNumbers.some(weekNumber => otherWeekNumbers.includes(weekNumber));
   }
 
@@ -112,41 +114,51 @@ const TasksTable = ({
         <DefaultButton onClick={onClickNextQuarter}>{strings.NextQuarter}</DefaultButton>
       </Stack>
 
-      <table className={styles.quarterTable}>
-        <tr>
-          {getQuarterMonths().map(month => {
-            return (<th colSpan={getMonthWeekCount(month)}>{new Date(year, month).toLocaleString('default', { month: 'long' })}</th>);
+
+      <TooltipHost
+        content={tooltipContent}
+        styles={{ root: { display: 'inline-block' } }}
+      >
+        <table className={styles.quarterTable}>
+          <tr>
+            {getQuarterMonths().map(month => {
+              return (<th colSpan={getMonthWeekCount(month)}>{new Date(year, month).toLocaleString('default', { month: 'long' })}</th>);
+            })}
+          </tr>
+          <tr>
+            {quarterWeeks.map(week => {
+              return (<th>{week}</th>)
+            })}
+          </tr>
+          {tasks.filter(task => {
+            const weeks = getWeeks(task.startDate, task.endDate);
+
+            const weeksOverlapping = areWeeksOverlapping(weeks, quarterWeeks);
+            const yearsOverlapping = task.startDate.getFullYear() === year || task.endDate.getFullYear() === year;
+
+            return weeksOverlapping && yearsOverlapping;
+          }).map(task => {
+            const taskWeeks = getWeeks(task.startDate, task.endDate);
+
+            return (
+              <tr>
+                {quarterWeeks.map(week => {
+                  const hasTask = taskWeeks.includes(week);
+                  return (<td
+                    className={hasTask && styles.hasTask}
+                    onMouseOver={hasTask && (() => {
+                      setTooltipContent(task.name);
+                    })}
+                    onMouseOut={hasTask && (() => {
+                      setTooltipContent('')
+                    })}
+                    />)
+                })}
+              </tr>
+            );
           })}
-        </tr>
-        <tr>
-          {quarterWeeks.map(week => {
-            return (<th>{week}</th>)
-          })}
-        </tr>
-        {tasks.filter(task => {
-          const weeks = getWeeks(task.startDate, task.endDate);
-
-          const weeksOverlapping = areWeeksOverlapping(weeks, quarterWeeks);
-          const yearsOverlapping = task.startDate.getFullYear() === year || task.endDate.getFullYear() === year;
-
-          return weeksOverlapping && yearsOverlapping;
-        }).map(task => {
-          const taskWeeks = getWeeks(task.startDate, task.endDate);
-
-          return (
-            <tr>
-              {quarterWeeks.map(week => {
-                const hasTask = taskWeeks.includes(week);
-                return (<td
-                  className={hasTask && styles.hasTask}
-                  onMouseOver={hasTask && (() => {
-          
-                  })} />)
-              })}
-            </tr>
-          );
-        })}
-      </table>
+        </table>
+      </TooltipHost>
     </Stack>
   );
 }
