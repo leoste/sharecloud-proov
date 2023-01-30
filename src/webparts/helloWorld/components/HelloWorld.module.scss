@@ -39,10 +39,14 @@
   * {
     border: 1px solid black;
     height: 32px;
-    width: 32px;
+    width: 48px;
   }
 }
 
 .hasTask {
   background: blue;
+}
+
+.wideStack {
+  width: 100%;
 }

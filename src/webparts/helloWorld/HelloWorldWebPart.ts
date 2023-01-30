@@ -1,10 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import {
-  IPropertyPaneConfiguration,
-  PropertyPaneTextField
-} from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import HelloWorld from './components/HelloWorld';
 import { IHelloWorldProps } from './components/HelloWorld';
@@ -36,27 +32,5 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
 
   protected get dataVersion(): Version {
     return Version.parse('1.0');
-  }
-
-  protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    return {
-      pages: [
-        {
-          header: {
-            description: "lk 1  taskid"
-          },
-          groups: [
-            {
-              groupName: "1. task",
-              groupFields: [
-                PropertyPaneTextField('description', {
-                  label: "labelino"
-                })
-              ]
-            }
-          ]
-        }
-      ]
-    };
   }
 }
