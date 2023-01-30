@@ -80,8 +80,6 @@ const TasksTable = ({
     return weeks;
   }
 
-  // TODO: universal function for adding/removing quarter
-
   const onClickLastQuarter = () => {
     let nextQuarter = quarter - 1;
     let nextYear = year;
