@@ -140,18 +140,21 @@ const TasksTable = ({
           }).map(task => {
             const taskWeeks = getWeeks(task.startDate, task.endDate);
 
+            const openTooltip = () => {
+              setTooltipContent(task.name);
+            };
+
+            const closeTooltip = () => {
+              setTooltipContent('')
+            };
+
             return (
               <tr>
                 {quarterWeeks.map(week => {
                   const hasTask = taskWeeks.includes(week);
                   return (<td
                     className={hasTask && styles.hasTask}
-                    onMouseOver={hasTask && (() => {
-                      setTooltipContent(task.name);
-                    })}
-                    onMouseOut={hasTask && (() => {
-                      setTooltipContent('')
-                    })}
+                    onMouseOver={hasTask ? openTooltip : closeTooltip}
                     />)
                 })}
               </tr>
