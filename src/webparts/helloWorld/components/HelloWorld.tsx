@@ -5,6 +5,7 @@ import { CommandBar, Stack } from 'office-ui-fabric-react';
 import ITask from '../types/ITask';
 import TasksForm from './TasksForm';
 import TasksTable from './TasksTable';
+import * as strings from 'HelloWorldWebPartStrings';
 
 export interface IHelloWorldProps {
 
@@ -50,12 +51,12 @@ const HelloWorld = ({
       <CommandBar items={[
         {
           key: 'table',
-          text: 'View task table',
+          text: strings.MenubarTable,
           onClick: () => { setActiveWindow(ActiveWindow.Table); }
         },
         {
           key: 'form',
-          text: 'View tasks form',
+          text: strings.MenubarForm,
           onClick: () => { setActiveWindow(ActiveWindow.Form); }
         }
       ]} />

@@ -1,3 +1,4 @@
+import * as strings from "HelloWorldWebPartStrings";
 import { DatePicker, IconButton, Stack, TextField } from "office-ui-fabric-react";
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -39,7 +40,7 @@ const TasksForm = ({
           <Stack horizontal horizontalAlign='space-between' verticalAlign='end' className={styles.wideStack}>
             <Stack horizontal horizontalAlign='start'>
               <TextField
-                label='Name'
+                label={strings.FormName}
                 value={task.name}
                 onChange={(target, value) => {
                   const newTasks = tasks.slice();
@@ -48,7 +49,7 @@ const TasksForm = ({
                 }}
               />
               <DatePicker
-                label='Start date'
+                label={strings.FormStartDate}
                 value={task.startDate}
                 showWeekNumbers
                 onSelectDate={(value) => {
@@ -60,7 +61,7 @@ const TasksForm = ({
                 firstDayOfWeek={FirstDayOfWeek}
               />
               <DatePicker
-                label='End date'
+                label={strings.FormEndDate}
                 value={task.endDate}
                 showWeekNumbers
                 onSelectDate={(value) => {
