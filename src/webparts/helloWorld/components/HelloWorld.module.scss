@@ -38,7 +38,11 @@
 
   * {
     border: 1px solid black;
-    width: 32px;
     height: 32px;
+    width: 32px;
   }
+}
+
+.hasTask {
+  background: blue;
 }
