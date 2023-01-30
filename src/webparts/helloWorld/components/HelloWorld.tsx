@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './HelloWorld.module.scss';
 import { addWeeks, DefaultButton, getWeekNumber, getWeekNumbersInMonth } from 'office-ui-fabric-react';
 import * as strings from 'HelloWorldWebPartStrings';
@@ -12,7 +12,7 @@ export interface IQuarter {
 }
 
 export interface IHelloWorldProps {
-  
+
 }
 
 const HelloWorld = ({
@@ -25,7 +25,26 @@ const HelloWorld = ({
   const [quarter, setQuarter] = useState<number>(Math.floor((now.getMonth() + 3) / 3));
 
   const [tasks, setTasks] = useState<ITask[]>([]);
-  setTasks([]);
+
+  useEffect(() => {
+    setTasks([
+      {
+        name: 'task 1',
+        startDate: new Date(2023, 0, 23),
+        endDate: new Date(2023, 0, 27)
+      },
+      {
+        name: 'task 2',
+        startDate: new Date(2023, 1, 21),
+        endDate: new Date(2023, 2, 3)
+      },
+      {
+        name: 'task 3',
+        startDate: new Date(2023, 0, 30),
+        endDate: new Date(2023, 2, 20)
+      }
+    ]);
+  }, []);
 
   const getQuarterMonths = (): number[] => {
     const months = [];
