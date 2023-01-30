@@ -4,16 +4,11 @@ import styles from './HelloWorld.module.scss';
 import { addWeeks, DefaultButton, getWeekNumber, getWeekNumbersInMonth } from 'office-ui-fabric-react';
 import * as strings from 'HelloWorldWebPartStrings';
 import { FirstDayOfWeek, FirstWeekOfYear } from '../helpers/constants';
+import ITask from '../types/ITask';
 
 export interface IQuarter {
   year: number;
   q: number
-}
-
-export interface ITask {
-  name: string;
-  startDate: Date;
-  endDate: Date;
 }
 
 export interface IHelloWorldProps {
@@ -28,6 +23,9 @@ const HelloWorld = ({
 
   const [year, setYear] = useState<number>(now.getFullYear());
   const [quarter, setQuarter] = useState<number>(Math.floor((now.getMonth() + 3) / 3));
+
+  const [tasks, setTasks] = useState<ITask[]>([]);
+  setTasks([]);
 
   const getQuarterMonths = (): number[] => {
     const months = [];
@@ -110,24 +108,6 @@ const HelloWorld = ({
     setQuarter(nextQuarter);
     setYear(nextYear);
   }
-
-  const tasks: ITask[] = [
-    {
-      name: 'task 1',
-      startDate: new Date(2023, 0, 23),
-      endDate: new Date(2023, 0, 27)
-    },
-    {
-      name: 'task 2',
-      startDate: new Date(2023, 1, 21),
-      endDate: new Date(2023, 2, 3)
-    },
-    {
-      name: 'task 3',
-      startDate: new Date(2023, 0, 30),
-      endDate: new Date(2023, 2, 20)
-    }
-  ];
 
   const quarterWeeks = getQuarterWeeks();
 
