@@ -2,7 +2,8 @@ import * as strings from "HelloWorldWebPartStrings";
 import { DatePicker, IconButton, Stack, TextField } from "office-ui-fabric-react";
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { FirstDayOfWeek, FirstWeekOfYear, maxTasks } from "../helpers/constants";
+import { FirstDayOfWeek, FirstWeekOfYear } from "../helpers/dateMath";
+import { maxTasks } from "../helpers/constants";
 import ITask from "../types/ITask";
 import styles from "./HelloWorld.module.scss";
 

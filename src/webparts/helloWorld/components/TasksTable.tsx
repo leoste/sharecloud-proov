@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
 import styles from './HelloWorld.module.scss';
-import { addWeeks, DefaultButton, getWeekNumber, getWeekNumbersInMonth, Stack, TooltipHost } from 'office-ui-fabric-react';
+import { DefaultButton, Stack, TooltipHost } from 'office-ui-fabric-react';
 import * as strings from 'HelloWorldWebPartStrings';
-import { FirstDayOfWeek, FirstWeekOfYear } from '../helpers/constants';
 import ITask from '../types/ITask';
+import { areWeeksOverlapping, getLastQuarter, getMonthWeekCount, getNextQuarter, getQuarterMonths, getQuarterWeeks, getWeeks } from '../helpers/dateMath';
 
 export interface IQuarter {
   year: number;
@@ -26,83 +26,19 @@ const TasksTable = ({
 
   const [tooltipContent, setTooltipContent] = useState<string>('');
 
-  const getQuarterMonths = (): number[] => {
-    const months = [];
-    for (let i = 0; i < 3; i++) {
-      months.push((quarter - 1) * 3 + i);
-    }
-    return months;
-  }
-
-  const getMonthDate = (month: number): Date => {
-    return new Date(year, month);
-  }
-
-  const getWeeksInMonth = (month: number): number[] => {
-    return getWeekNumbersInMonth(5, FirstDayOfWeek, FirstWeekOfYear, getMonthDate(month))
-  }
-
-  const getMonthWeekCount = (month: number): number => {
-    const weeks = getWeeksInMonth(month);
-    return weeks.length;
-  }
-
-  const getWeeks = (startDate: Date, endDate: Date): number[] => {
-    const weeks = [];
-
-    const endWeek = getWeekNumber(endDate, FirstDayOfWeek, FirstWeekOfYear);
-
-    let date = new Date(startDate.getTime());
-    let week: number;
-
-    do {
-      week = getWeekNumber(date, FirstDayOfWeek, FirstWeekOfYear)
-      weeks.push(week);
-      date = addWeeks(date, 1);
-    }
-    while (week !== endWeek);
-
-    return weeks;
-  }
-
-  const areWeeksOverlapping = (weekNumbers: number[], otherWeekNumbers: number[]): boolean => {
-
-    return weekNumbers.some(weekNumber => otherWeekNumbers.includes(weekNumber));
-  }
-
-  const getQuarterWeeks = (): number[] => {
-    const weeks: number[] = [];
-    const months = getQuarterMonths();
-    months.forEach(month => {
-      const weekNumbers = getWeeksInMonth(month);
-      weekNumbers.forEach(weekNumber => weeks.push(weekNumber));
-    })
-    return weeks;
-  }
-
   const onClickLastQuarter = () => {
-    let nextQuarter = quarter - 1;
-    let nextYear = year;
-    if (nextQuarter < 1) {
-      nextQuarter = 4;
-      nextYear--;
-    }
-    setQuarter(nextQuarter);
-    setYear(nextYear);
+    const { year: lastYear, quarter: lastQuarter } = getLastQuarter(year, quarter);
+    setQuarter(lastQuarter);
+    setYear(lastYear);
   }
 
   const onClickNextQuarter = () => {
-    let nextQuarter = quarter + 1;
-    let nextYear = year;
-    if (nextQuarter > 4) {
-      nextQuarter = 1;
-      nextYear++;
-    }
+    const { year: nextYear, quarter: nextQuarter } = getNextQuarter(year, quarter);
     setQuarter(nextQuarter);
     setYear(nextYear);
   }
 
-  const quarterWeeks = getQuarterWeeks();
+  const quarterWeeks = getQuarterWeeks(year, quarter);
 
   return (
     <Stack horizontalAlign='center' className={styles.wideStack}>
@@ -119,8 +55,8 @@ const TasksTable = ({
       >
         <table className={styles.quarterTable}>
           <tr>
-            {getQuarterMonths().map(month => {
-              return (<th colSpan={getMonthWeekCount(month)}>{new Date(year, month).toLocaleString('default', { month: 'long' })}</th>);
+            {getQuarterMonths(quarter).map(month => {
+              return (<th colSpan={getMonthWeekCount(year, month)}>{new Date(year, month).toLocaleString('default', { month: 'long' })}</th>);
             })}
           </tr>
           <tr>
