@@ -59,9 +59,9 @@ const HelloWorld = ({
         }
       ]} />
 
-      {activeWindow === ActiveWindow.Table && <TasksTable tasks={tasks} />}
-
       <Stack horizontalAlign='center' className={styles.wideStack}>
+        {activeWindow === ActiveWindow.Table && <TasksTable tasks={tasks} />}
+
         {activeWindow === ActiveWindow.Form &&
           <TasksForm
             defaultTasks={tasks}
