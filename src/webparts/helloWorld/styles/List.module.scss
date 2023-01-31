@@ -1,0 +1,17 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.inactive {
+  background: $ms-color-communicationTint40;
+
+  &:nth-child(odd) {
+    background: $ms-color-communicationTint30;
+  }
+}
+
+.active {
+  background: $ms-color-communicationTint10;
+
+  &:nth-child(odd) {
+    background: $ms-color-communicationPrimary;
+  }
+}
