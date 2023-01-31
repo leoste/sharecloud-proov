@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
-import styles from './HelloWorld.module.scss';
-import { CommandBar, Stack } from 'office-ui-fabric-react';
 import ITask from '../types/ITask';
-import TasksForm from './TasksForm';
-import TasksTable from './TasksTable';
-import * as strings from 'HelloWorldWebPartStrings';
+import TaskList from './TaskList';
 
 export interface IHelloWorldProps {
 
@@ -14,10 +10,6 @@ export interface IHelloWorldProps {
 const HelloWorld = ({
 
 }: IHelloWorldProps) => {
-
-  enum ActiveWindow { Table, Form };
-
-  const [activeWindow, setActiveWindow] = useState<ActiveWindow>(ActiveWindow.Table);
 
   const defaultTasks = [
     {
@@ -46,28 +38,10 @@ const HelloWorld = ({
 
   return (
     <>
-      <CommandBar items={[
-        {
-          key: 'table',
-          text: strings.MenubarTable,
-          onClick: () => { setActiveWindow(ActiveWindow.Table); }
-        },
-        {
-          key: 'form',
-          text: strings.MenubarForm,
-          onClick: () => { setActiveWindow(ActiveWindow.Form); }
-        }
-      ]} />
-
-      <Stack horizontalAlign='center' className={styles.wideStack}>
-        {activeWindow === ActiveWindow.Table && <TasksTable tasks={tasks} />}
-
-        {activeWindow === ActiveWindow.Form &&
-          <TasksForm
-            defaultTasks={tasks}
-            onTasksChange={(tasks) => { setTasks(tasks); }}
-          />}
-      </Stack>
+      <TaskList
+        tasks={tasks}
+        onTasksChange={(tasks) => { setTasks(tasks); }}
+      />
     </>
   );
 }

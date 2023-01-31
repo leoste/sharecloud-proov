@@ -75,3 +75,7 @@ export const areWeeksOverlapping = (weekNumbers: number[], otherWeekNumbers: num
 
   return weekNumbers.some(weekNumber => otherWeekNumbers.includes(weekNumber));
 }
+
+export const isYearInDateRange = (year: number, startDate: Date, endDate: Date) => {
+  return year >= startDate.getFullYear() && year <= endDate.getFullYear();
+}
