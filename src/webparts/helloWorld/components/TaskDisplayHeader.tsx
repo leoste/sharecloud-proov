@@ -21,7 +21,10 @@ const TaskDisplayHeader = ({
       <Stack horizontal>
         {getQuarterMonths(quarter).map(month => {
           return (
-            <Stack.Item styles={{ root: { flex: getMonthWeekCount(year, month) } }}>
+            <Stack.Item
+              styles={{ root: { flex: getMonthWeekCount(year, month) } }}
+              className={styles.inactive}
+            >
               <CustomText>
                 {new Date(year, month).toLocaleString('default', { month: 'long' })}
               </CustomText>
