@@ -1,8 +1,9 @@
-import { addWeeks, DayOfWeek, getWeekNumber, getWeekNumbersInMonth } from 'office-ui-fabric-react';
+import { addWeeks, compareDatePart, DayOfWeek, getMonthEnd, getMonthStart, getStartDateOfWeek, getWeekNumber } from 'office-ui-fabric-react';
 import { FirstWeekOfYear as OfficeFirstWeekOfYear } from 'office-ui-fabric-react';
 
 export const FirstWeekOfYear = OfficeFirstWeekOfYear.FirstFourDayWeek;
 export const FirstDayOfWeek = DayOfWeek.Monday;
+export const msInOneDay = 1000 * 60 * 60 * 24;
 
 export const getLastQuarter = (year: number, quarter: number): { year: number, quarter: number } => {
   quarter--;
@@ -44,8 +45,37 @@ export const getMonthDate = (year: number, month: number): Date => {
   return new Date(year, month);
 }
 
+export const getDaysPassed = (firstDate: Date, secondDate: Date): number => {
+  const timeDifference = secondDate.getTime() - firstDate.getTime();
+  const dayDifference = timeDifference / msInOneDay;
+  return dayDifference;
+}
+
 export const getWeeksInMonth = (year: number, month: number): number[] => {
-  return getWeekNumbersInMonth(5, FirstDayOfWeek, FirstWeekOfYear, getMonthDate(year, month))
+  const weeks: number[] = [];
+
+  const date = new Date(year, month);
+
+  const first = getMonthStart(date);  
+  const firstMonday = getStartDateOfWeek(first, FirstDayOfWeek);
+  let countingDate = new Date(firstMonday.getTime());
+  if (getDaysPassed(firstMonday, first) >= 4) {
+    countingDate = addWeeks(countingDate, 1);
+  }
+  
+  const last = getMonthEnd(date);
+  const lastMonday = getStartDateOfWeek(last, FirstDayOfWeek);
+  let targetDate = new Date(lastMonday.getTime());
+  if (getDaysPassed(lastMonday, last) <= 2) {
+    targetDate = addWeeks(targetDate, -1);
+  }
+
+  while (compareDatePart(countingDate, targetDate) <= 0) {
+    weeks.push(getWeekNumber(countingDate, FirstDayOfWeek, FirstWeekOfYear));
+    countingDate = addWeeks(countingDate, 1);
+  }
+
+  return weeks;
 }
 
 export const getMonthWeekCount = (year: number, month: number): number => {
