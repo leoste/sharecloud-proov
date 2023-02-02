@@ -1,7 +1,7 @@
 import { DatePicker, Stack, TextField } from "office-ui-fabric-react";
 import * as React from "react";
 import ITask from "../types/ITask";
-import ITaskListFlex from "../types/ITaskListProportions";
+import ITaskListFlex from "../types/ITaskListFlexProportions";
 
 export interface ITaskFormProps {
   task: ITask,
@@ -9,8 +9,13 @@ export interface ITaskFormProps {
   flex: ITaskListFlex
 }
 
+/**
+ * Generates a form for the task. The user can set the name, start and end dates.
+ * It must be externally aligned.
+ * @param onTaskUpdate is called whenever the user changes his input.
+ */
 const TaskForm = ({
-  task: superTask,
+  task,
   onTaskUpdate,
   flex
 }: ITaskFormProps) => {
@@ -18,19 +23,22 @@ const TaskForm = ({
     return date.toLocaleString('default', { month: '2-digit', day: '2-digit' });
   }
 
+  // The given task is used to prefill form data.
+  // When the user changes any field, a new task object with the new data is emitted to the parent component.
+
   return (
     <Stack horizontal>
       <Stack.Item styles={{ root: { flex: flex.middle.nameFlex } }}>
         <TextField
-          value={superTask.name}
-          onChange={(target, value) => { onTaskUpdate({ ...superTask, name: value }); }}
+          value={task.name}
+          onChange={(target, value) => { onTaskUpdate({ ...task, name: value }); }}
         />
       </Stack.Item>
 
       <Stack.Item styles={{ root: { flex: flex.middle.startDateFlex } }}>
         <DatePicker
-          value={superTask.startDate}
-          onSelectDate={(date) => { onTaskUpdate({ ...superTask, startDate: date }); }}
+          value={task.startDate}
+          onSelectDate={(date) => { onTaskUpdate({ ...task, startDate: date }); }}
 
           formatDate={formatDate}
         />
@@ -38,8 +46,8 @@ const TaskForm = ({
 
       <Stack.Item styles={{ root: { flex: flex.middle.endDateFlex } }}>
         <DatePicker
-          value={superTask.endDate}
-          onSelectDate={(date) => { onTaskUpdate({ ...superTask, endDate: date }); }}
+          value={task.endDate}
+          onSelectDate={(date) => { onTaskUpdate({ ...task, endDate: date }); }}
 
           formatDate={formatDate}
         />

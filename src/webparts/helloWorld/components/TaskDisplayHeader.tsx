@@ -1,32 +1,38 @@
 import { Stack } from "office-ui-fabric-react";
 import * as React from "react";
 import { getMonthWeekCount, getQuarterMonths, getQuarterWeeks } from "../helpers/dateMath";
-import ITaskListFlex from "../types/ITaskListProportions";
+import ITaskListFlex from "../types/ITaskListFlexProportions";
 import CustomText from "./CustomText";
 import styles from "../styles/List.module.scss";
+import IYearQuarter from "../types/IQuarter";
 
 export interface ITaskDisplayHeaderProps {
-  year: number,
-  quarter: number,
+  yearQuarter: IYearQuarter,
   flex: ITaskListFlex
 }
 
+/**
+ * A header row for a TaskDisplay.
+ * It must be externally aligned.
+ */
 const TaskDisplayHeader = ({
-  year,
-  quarter
+  yearQuarter
 }: ITaskDisplayHeaderProps) => {
+
+  // generates two rows, first is a row of months and second is a row of weeks.
+  // the weeks line have to line up with the months, so it's clear which month which week belongs to.
 
   return (
     <Stack>
       <Stack horizontal>
-        {getQuarterMonths(quarter).map(month => {
+        {getQuarterMonths(yearQuarter.quarter).map(month => {
           return (
             <Stack.Item
-              styles={{ root: { flex: getMonthWeekCount(year, month) } }}
+              styles={{ root: { flex: getMonthWeekCount(yearQuarter.year, month) } }}
               className={styles.inactive}
             >
               <CustomText>
-                {new Date(year, month).toLocaleString('default', { month: 'long' })}
+                {new Date(yearQuarter.year, month).toLocaleString('default', { month: 'long' })}
               </CustomText>
             </Stack.Item>
           );
@@ -34,7 +40,7 @@ const TaskDisplayHeader = ({
       </Stack>
 
       <Stack horizontal>
-        {getQuarterWeeks(year, quarter).map(week => {
+        {getQuarterWeeks(yearQuarter).map(week => {
           return (
             <Stack.Item
               styles={{ root: { flex: 1 } }}

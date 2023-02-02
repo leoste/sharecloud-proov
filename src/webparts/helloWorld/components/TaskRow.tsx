@@ -3,7 +3,7 @@ import * as React from "react";
 import ITask from "../types/ITask";
 import TaskDisplay, { ITaskDisplayProps } from "./TaskDisplay";
 import TaskForm, { ITaskFormProps } from "./TaskForm";
-import ITaskListFlex from "../types/ITaskListProportions";
+import ITaskListFlex from "../types/ITaskListFlexProportions";
 
 export interface ITaskRowProps extends ITaskDisplayProps, ITaskFormProps {
   task: ITask,
@@ -11,12 +11,16 @@ export interface ITaskRowProps extends ITaskDisplayProps, ITaskFormProps {
   flex: ITaskListFlex
 }
 
+/**
+ * Generates one row based on given task. It includes a delete button at the left,
+ * a TaskForm for the task properties and a TaskDisplay for a visual table row.
+ * The task will be visible in the table row, if it matches up with the given yearQuarter.
+ */
 const TaskRow = ({
   task,
   onTaskUpdate,
   onTaskDelete,
-  year,
-  quarter,
+  yearQuarter,
   flex
 }: ITaskRowProps) => {
 
@@ -40,8 +44,7 @@ const TaskRow = ({
       <Stack.Item styles={{ root: { flex: flex.rightFlex } }}>
         <TaskDisplay
           task={task}
-          year={year}
-          quarter={quarter}
+          yearQuarter={yearQuarter}
           flex={flex}
         />
       </Stack.Item>
