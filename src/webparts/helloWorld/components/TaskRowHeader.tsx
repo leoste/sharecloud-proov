@@ -2,7 +2,7 @@ import { IconButton, Stack } from "office-ui-fabric-react";
 import * as React from "react";
 import TaskDisplayHeader, { ITaskDisplayHeaderProps } from "./TaskDisplayHeader";
 import TaskFormHeader from "./TaskFormHeader";
-import ITaskListFlex from "../types/ITaskListProportions";
+import ITaskListFlex from "../types/ITaskListFlexProportions";
 
 export interface ITaskRowHeaderProps extends ITaskDisplayHeaderProps {
   onAddTask: () => void,
@@ -10,12 +10,14 @@ export interface ITaskRowHeaderProps extends ITaskDisplayHeaderProps {
   flex: ITaskListFlex
 }
 
+/**
+ * A header row for a list of TaskRows.
+ */
 const TaskRowHeader = ({
   onAddTask,
   addTaskDisabled,
   flex,
-  year,
-  quarter
+  yearQuarter,
 }: ITaskRowHeaderProps) => {
 
   return (
@@ -34,8 +36,7 @@ const TaskRowHeader = ({
 
         <Stack.Item styles={{ root: { flex: flex.rightFlex } }}>
           <TaskDisplayHeader
-            year={year}
-            quarter={quarter}
+            yearQuarter={yearQuarter}
             flex={flex}
           />
         </Stack.Item>

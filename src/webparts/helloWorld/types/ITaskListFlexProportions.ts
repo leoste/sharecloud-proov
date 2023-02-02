@@ -1,3 +1,6 @@
+/**
+ * Used to determine the proportions of the TaskList component and its sub-components.
+ */
 export default interface ITaskListFlex {
   leftFlex: number,
   middleFlex: number,

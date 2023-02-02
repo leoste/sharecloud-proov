@@ -2,11 +2,12 @@ import * as strings from "HelloWorldWebPartStrings";
 import { DefaultButton, Stack } from "office-ui-fabric-react";
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { MaxTasks } from "../helpers/constants";
-import { getLastQuarter, getNextQuarter } from "../helpers/dateMath";
+import { MaxTaskCount } from "../helpers/constants";
+import { getLastYearQuarter, getNextYearQuarter, getYearQuarterFromDate } from "../helpers/dateMath";
 import styles from "../styles/Stack.module.scss";
+import IYearQuarter from "../types/IQuarter";
 import ITask from "../types/ITask";
-import ITaskListFlex from "../types/ITaskListProportions";
+import ITaskListFlexProportions from "../types/ITaskListFlexProportions";
 import TaskRow from "./TaskRow";
 import TaskRowHeader from "./TaskRowHeader";
 
@@ -15,6 +16,26 @@ export interface ITaskListProps {
   onTasksChange?: (tasks: ITask[]) => void
 }
 
+// Default flex proportions for the component and sub-components.
+// It is passed along to sub-components to ensure consistent proportions.
+
+const flex: ITaskListFlexProportions = {
+  leftFlex: 1,
+  middleFlex: 5,
+  middle: {
+    nameFlex: 3,
+    startDateFlex: 2,
+    endDateFlex: 2
+  },
+  rightFlex: 6,
+  middleMargin: 32
+}
+
+/**
+ * Displays an array of tasks and allows the user to modify it. Tasks are shown both as a list and as a table.
+ * @param tasks An array of tasks to initialize the component with
+ * @param onTasksChange a function that gets called when the task list is changed by the user.
+ */
 const TaskList = ({
   tasks: defaultTasks,
   onTasksChange
@@ -26,45 +47,29 @@ const TaskList = ({
     onTasksChange(tasks);
   }, [tasks]);
 
-  const now = new Date();
-
-  const [year, setYear] = useState<number>(now.getFullYear());
-  const [quarter, setQuarter] = useState<number>(Math.floor((now.getMonth() + 3) / 3));
-
-  const flex: ITaskListFlex = {
-    leftFlex: 1,
-    middleFlex: 5,
-    middle: {
-      nameFlex: 3,
-      startDateFlex: 2,
-      endDateFlex: 2
-    },
-    rightFlex: 6,
-    middleMargin: 32
-  }
-
-  if (false) {
-    setYear(1);
-    setQuarter(1);
-  }
+  // since most calculations are based on the year and quarter, an IYearQuarter instead of a Date is used.
+  
+  const [yearQuarter, setYearQuarter] = useState<IYearQuarter>(getYearQuarterFromDate(new Date()));
 
   const onClickLastQuarter = () => {
-    const { year: lastYear, quarter: lastQuarter } = getLastQuarter(year, quarter);
-    setQuarter(lastQuarter);
-    setYear(lastYear);
+    setYearQuarter(getLastYearQuarter(yearQuarter));
   }
 
   const onClickNextQuarter = () => {
-    const { year: nextYear, quarter: nextQuarter } = getNextQuarter(year, quarter);
-    setQuarter(nextQuarter);
-    setYear(nextYear);
+    setYearQuarter(getNextYearQuarter(yearQuarter));
   }
+
+  /*
+   * The layout is first buttons and titles in one row at the top, then the list and table side by side.
+   * Although they're side by side, generating them and ensuring that they're properly aligned is easier
+   * when it's done row by row. Because of that, a TaskRow or TaskRowHeader generate components for both.
+   */
 
   return (
     <>
       <Stack horizontal verticalAlign='center' horizontalAlign='space-around' className={styles.wideStack}>
         <DefaultButton onClick={onClickLastQuarter}>{strings.LastQuarter}</DefaultButton>
-        <h1>{year} Q{quarter}</h1>
+        <h1>{yearQuarter.year} Q{yearQuarter.quarter}</h1>
         <DefaultButton onClick={onClickNextQuarter}>{strings.NextQuarter}</DefaultButton>
       </Stack>
 
@@ -76,9 +81,8 @@ const TaskList = ({
             endDate: new Date()
           }])
         }}
-        addTaskDisabled={tasks.length >= MaxTasks}
-        year={year}
-        quarter={quarter}
+        addTaskDisabled={tasks.length >= MaxTaskCount}
+        yearQuarter={yearQuarter}
         flex={flex}
       />
 
@@ -100,8 +104,7 @@ const TaskList = ({
             task={task}
             onTaskUpdate={onTaskUpdate}
             onTaskDelete={onTaskDelete}
-            year={year}
-            quarter={quarter}
+            yearQuarter={yearQuarter}
             flex={flex}
           />
         )
