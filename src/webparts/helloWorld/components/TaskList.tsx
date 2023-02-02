@@ -2,7 +2,7 @@ import * as strings from "HelloWorldWebPartStrings";
 import { DefaultButton, Stack } from "office-ui-fabric-react";
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { MaxTasks } from "../helpers/constants";
+import { MaxTaskCount } from "../helpers/constants";
 import { getLastYearQuarter, getNextYearQuarter, getYearQuarterFromDate } from "../helpers/dateMath";
 import styles from "../styles/Stack.module.scss";
 import IYearQuarter from "../types/IQuarter";
@@ -81,7 +81,7 @@ const TaskList = ({
             endDate: new Date()
           }])
         }}
-        addTaskDisabled={tasks.length >= MaxTasks}
+        addTaskDisabled={tasks.length >= MaxTaskCount}
         yearQuarter={yearQuarter}
         flex={flex}
       />

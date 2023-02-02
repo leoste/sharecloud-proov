@@ -2,14 +2,15 @@ import { addWeeks, DayOfWeek, getMonthEnd, getMonthStart, getStartDateOfWeek, ge
 import { FirstWeekOfYear as OfficeFirstWeekOfYear } from 'office-ui-fabric-react';
 import IYearQuarter from '../types/IQuarter';
 
-
-// These constants are used to ensure consistent behaviour throughout the whole app.
-
+/**
+ * This FirstWeekOfYear value should be used when prompted for one, in order to display the results consistently.
+ */
 export const FirstWeekOfYear = OfficeFirstWeekOfYear.FirstFourDayWeek;
 
+/**
+ * This FirstDayOfWeek value should be used when prompted for one, in order to display the results consistently.
+ */
 export const FirstDayOfWeek = DayOfWeek.Monday;
-
-// These constants are used for calculations.
 
 const msInOneDay = 1000 * 60 * 60 * 24;
 const monthsInOneQuarter = 3;
